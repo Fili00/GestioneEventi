@@ -7,6 +7,7 @@ public class Event {
     private int currentCapacity;
 
     public Event(String name, int maxCapacity){
+        if(maxCapacity < 0) throw new InvalidParameterException("maxCapacity less than zero");
         this.name = name;
         this.maxCapacity = maxCapacity;
         this.currentCapacity = maxCapacity;
@@ -26,6 +27,7 @@ public class Event {
 
     public void setCurrentCapacity(int capacity){
         if(capacity > getMaxCapacity()) throw new InvalidParameterException("Capacity more than max capacity");
+        if(capacity < 0 && getCurrentCapacity() - capacity > getMaxCapacity()) throw new InvalidParameterException("New capacity more than max capacity");
         if(capacity > getCurrentCapacity()) throw new InvalidParameterException("Capacity more than current capacity");
         currentCapacity -= capacity;
     }
@@ -41,5 +43,10 @@ public class Event {
     @Override
     public int hashCode() {
         return Objects.hash(getName());
+    }
+
+    @Override
+    public String toString() {
+        return "Event " + name + " maxCapacity=" + maxCapacity + ", currentCapacity=" + currentCapacity;
     }
 }
