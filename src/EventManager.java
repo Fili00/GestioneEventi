@@ -1,16 +1,54 @@
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class EventManager {
-    private final List<Event> eventList;
+    private final Set<Event> eventSet;
 
     public EventManager(){
-        eventList = new LinkedList<Event>();
+        eventSet = new HashSet<Event>();
+    }
+
+    private Event getEvent(String name){
+        for(var event : eventSet){
+            if(event.getName().equals(name)){
+                return event;
+            }
+        }
+        return null;
     }
 
     public boolean addEvent(String name, int capacity){
-        eventList.add(new Event(name, capacity)); //TODO: AGGIUNGERE CONTROLLI VARI
+        eventSet.add(new Event(name, capacity)); //TODO: FARE THREAD SAFE
         return true;
     }
 
+    public boolean book(String name, int capacity){
+        var event = getEvent(name);
+        if(event == null)
+            return false;
+
+        synchronized (event){
+            try {
+                event.setCurrentCapacity(capacity);
+            }catch (Exception e){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean addCapacity(String name, int capacity){
+        var event = getEvent(name);
+        if(event == null)
+            return false;
+
+        synchronized (event){
+            try {
+                event.setMaxCapacity(capacity);
+            }catch (Exception e){
+                return false;
+            }
+        }
+        return true;
+    }
 }

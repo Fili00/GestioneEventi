@@ -3,7 +3,7 @@ import java.util.Objects;
 
 public class Event {
     private final String name;
-    private final int maxCapacity;
+    private int maxCapacity;
     private int currentCapacity;
 
     public Event(String name, int maxCapacity){
@@ -30,6 +30,11 @@ public class Event {
         if(capacity < 0 && getCurrentCapacity() - capacity > getMaxCapacity()) throw new InvalidParameterException("New capacity more than max capacity");
         if(capacity > getCurrentCapacity()) throw new InvalidParameterException("Capacity more than current capacity");
         currentCapacity -= capacity;
+    }
+
+    public void setMaxCapacity(int capacity){
+        if(capacity + getMaxCapacity() < getCurrentCapacity()) throw new InvalidParameterException("Max capacity less than current capacity");
+        maxCapacity += capacity;
     }
 
     @Override
