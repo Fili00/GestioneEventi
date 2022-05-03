@@ -17,7 +17,7 @@ public class EventManager {
         return e == newE;
     }
 
-    public boolean book(String name, int capacity){
+    public boolean book(String name, int capacity){ //TODO: RENDERE BLOCCANTE
         var event = getEvent(name);
 
         if(event == null)
@@ -49,5 +49,15 @@ public class EventManager {
         }
 
         return true;
+    }
+    //TODO: METODO CHIUDI
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for(var s : events.entrySet()){
+            sb.append(s.getValue().toString());
+            sb.append('\n');
+        }
+        return sb.toString();
     }
 }
