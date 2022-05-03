@@ -1,29 +1,25 @@
-import java.util.HashSet;
-import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class EventManager {
-    private final Set<Event> eventSet;
+    private final ConcurrentHashMap<String,Event> events;
 
     public EventManager(){
-        eventSet = new HashSet<Event>();
+        events = new ConcurrentHashMap<String, Event>();
     }
 
     private Event getEvent(String name){
-        for(var event : eventSet){
-            if(event.getName().equals(name)){
-                return event;
-            }
-        }
-        return null;
+        return events.get(name);
     }
 
     public boolean addEvent(String name, int capacity){
-        eventSet.add(new Event(name, capacity)); //TODO: FARE THREAD SAFE
-        return true;
+        Event e = new Event(name, capacity);
+        var newE = events.putIfAbsent(name, e);
+        return e == newE;
     }
 
     public boolean book(String name, int capacity){
         var event = getEvent(name);
+
         if(event == null)
             return false;
 
@@ -34,11 +30,13 @@ public class EventManager {
                 return false;
             }
         }
+
         return true;
     }
 
     public boolean addCapacity(String name, int capacity){
         var event = getEvent(name);
+
         if(event == null)
             return false;
 
@@ -49,6 +47,7 @@ public class EventManager {
                 return false;
             }
         }
+
         return true;
     }
 }
