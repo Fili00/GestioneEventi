@@ -5,12 +5,13 @@ public class Event {
     private final String name;
     private int maxCapacity;
     private int currentCapacity;
-
+    private boolean closed;
     public Event(String name, int maxCapacity){
         if(maxCapacity < 0) throw new InvalidParameterException("maxCapacity less than zero");
         this.name = name;
         this.maxCapacity = maxCapacity;
         this.currentCapacity = maxCapacity;
+        this.closed = false;
     }
 
     public String getName() {
@@ -35,6 +36,15 @@ public class Event {
     public void setMaxCapacity(int capacity){
         if(capacity + getMaxCapacity() < getCurrentCapacity()) throw new InvalidParameterException("Max capacity less than current capacity");
         maxCapacity += capacity;
+        currentCapacity += capacity;
+    }
+
+    public boolean isClosed() {
+        return closed;
+    }
+
+    public void close() {
+        closed = true;
     }
 
     @Override
@@ -52,6 +62,6 @@ public class Event {
 
     @Override
     public String toString() {
-        return "Event " + name + " maxCapacity=" + maxCapacity + ", currentCapacity=" + currentCapacity;
+        return "Event " + name + " maxCapacity=" + maxCapacity + ", currentCapacity=" + currentCapacity + ", closed="+closed;
     }
 }

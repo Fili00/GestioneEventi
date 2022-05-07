@@ -2,47 +2,56 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class EventManager {
     private final ConcurrentHashMap<String,Event> events;
-
     public EventManager(){
         events = new ConcurrentHashMap<String, Event>();
     }
-
-    private Event getEvent(String name){
-        return events.get(name);
-    }
-
     public boolean addEvent(String name, int capacity){
         Event e = new Event(name, capacity);
         var newE = events.putIfAbsent(name, e);
         return e == newE;
     }
 
-    public boolean book(String name, int capacity){ //TODO: RENDERE BLOCCANTE
-        var event = getEvent(name);
-
+    private boolean bookAux(Event ev, int capacity) throws InterruptedException {
+        if(ev.isClosed()) {
+            return false;
+        }
+        try {
+            ev.setCurrentCapacity(capacity);
+            return true;
+        }catch (Exception e){
+            ev.wait(); //TODO: VEDERE SE TOGLIERE THROWS IN ALTO
+            return bookAux(ev, capacity);
+        }
+    }
+    public boolean book(String name, int capacity) {  //metodo 'Prenota'
+            //TODO: RENDERE BLOCCANTE
+        var event = events.get(name);
         if(event == null)
             return false;
 
-        synchronized (event){
-            try {
-                event.setCurrentCapacity(capacity);
-            }catch (Exception e){
-                return false;
+        try {
+            boolean r;
+            synchronized (event){
+                r = bookAux(event, capacity);
             }
+            return r;
+        }catch (Exception e){
+            return false;
         }
-
-        return true;
     }
 
-    public boolean addCapacity(String name, int capacity){
-        var event = getEvent(name);
+    public boolean addCapacity(String name, int capacity){ //metodo 'Aggiungi'
+        var event = events.get(name);
 
         if(event == null)
             return false;
 
         synchronized (event){
+            if(event.isClosed())
+                return false;
             try {
                 event.setMaxCapacity(capacity);
+                event.notifyAll();
             }catch (Exception e){
                 return false;
             }
@@ -51,11 +60,26 @@ public class EventManager {
         return true;
     }
     //TODO: METODO CHIUDI
+    public boolean close(String name){ //metodo 'Chiudi'
+        var event = events.get(name);
+
+        if(event == null)
+            return false;
+
+        synchronized (event){
+            if(event.isClosed())
+                return false;
+            event.close();
+            events.remove(name);
+            event.notifyAll();
+        }
+        return true;
+    }
     @Override
-    public String toString() {
+    public String toString() { //metodo 'ListaEventi'
         StringBuilder sb = new StringBuilder();
-        for(var s : events.entrySet()){
-            sb.append(s.getValue().toString());
+        for(var e : events.entrySet()){
+            sb.append(e.getValue().toString());
             sb.append('\n');
         }
         return sb.toString();
