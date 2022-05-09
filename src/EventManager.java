@@ -6,9 +6,7 @@ public class EventManager {
         events = new ConcurrentHashMap<String, Event>();
     }
     public boolean addEvent(String name, int capacity){
-        Event e = new Event(name, capacity);
-        var newE = events.putIfAbsent(name, e);
-        return e == newE;
+        return events.putIfAbsent(name, new Event(name, capacity)) == null;
     }
 
     private boolean bookAux(Event ev, int capacity) throws InterruptedException {
