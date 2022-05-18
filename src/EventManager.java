@@ -38,7 +38,6 @@ public class EventManager {
         }
     }
 
-
     public boolean addCapacity(String name, int capacity){ //metodo 'Aggiungi'
         var event = events.get(name);
 
