@@ -1,6 +1,5 @@
 import java.io.*;
 import java.net.*;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -11,18 +10,15 @@ public class Server implements Runnable {
     protected Thread runningThread = null;
     protected ExecutorService threadPool;
 
+    private EventManager em;
+
     public Server(int port) {
         this.serverPort = port;
         threadPool = Executors.newCachedThreadPool();
+        em = new EventManager();
     }
 
     public void run() {
-        /*
-        synchronized (this) {
-            this.runningThread = Thread.currentThread();
-        }
-        */
-
         try {
             this.serverSocket = new ServerSocket(this.serverPort);
         } catch (IOException e) {
@@ -41,13 +37,13 @@ public class Server implements Runnable {
                 throw new RuntimeException(
                         "Error accepting client connection", e);
             }
-            this.threadPool.execute(
-                    new WorkerRunnable(clientSocket, "Thread Pooled Server"));
+            this.threadPool.execute(new WorkerRunnable(clientSocket, em));
         }
 
         System.out.println("Server Stopped.");
     }
 
+    /*
     private void processClientRequest(Socket clientSocket) throws Exception {
         InputStream input = clientSocket.getInputStream();
         OutputStream output = clientSocket.getOutputStream();
@@ -59,7 +55,7 @@ public class Server implements Runnable {
         output.close();
         input.close();
         System.out.println("Request processed: " + time);
-    }
+    }*/
 
     private synchronized boolean isStopped() {
         return this.isStopped;

@@ -21,6 +21,8 @@ public class EventManager {
             return bookAux(ev, capacity);
         }
     }
+
+    //book [name] [capacity]
     public boolean book(String name, int capacity) {  //metodo 'Prenota'
             //TODO: RENDERE BLOCCANTE
         var event = events.get(name);
@@ -38,6 +40,7 @@ public class EventManager {
         }
     }
 
+    //add [name] [capacity]
     public boolean addCapacity(String name, int capacity){ //metodo 'Aggiungi'
         var event = events.get(name);
 
@@ -58,6 +61,8 @@ public class EventManager {
         return true;
     }
     //TODO: METODO CHIUDI
+
+    //close [name]
     public boolean close(String name){ //metodo 'Chiudi'
         var event = events.get(name);
 
@@ -73,6 +78,8 @@ public class EventManager {
         }
         return true;
     }
+
+    //list
     @Override
     public String toString() { //metodo 'ListaEventi'
         StringBuilder sb = new StringBuilder();
