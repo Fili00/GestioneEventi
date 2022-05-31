@@ -22,13 +22,14 @@ public class Server implements Runnable {
         try {
             this.serverSocket = new ServerSocket(this.serverPort);
         } catch (IOException e) {
-            throw new RuntimeException("Cannot open port 8080", e);
+            throw new RuntimeException("Cannot open port "+ this.serverPort, e);
         }
 
         while (!isStopped()) {
             Socket clientSocket = null;
             try {
                 clientSocket = this.serverSocket.accept();
+                System.out.println("CLiente connesso");
             } catch (IOException e) {
                 if (isStopped()) {
                     System.out.println("Server Stopped.");
@@ -42,6 +43,8 @@ public class Server implements Runnable {
 
         System.out.println("Server Stopped.");
     }
+
+
 
     /*
     private void processClientRequest(Socket clientSocket) throws Exception {

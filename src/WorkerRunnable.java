@@ -1,7 +1,9 @@
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.lang.Integer;
 
 public class WorkerRunnable implements Runnable{
     private Socket clientSocket = null;
@@ -13,7 +15,9 @@ public class WorkerRunnable implements Runnable{
     }
 
     private String parseRequest(String request){
+        request=request.substring(0,request.indexOf('\0'));
         String[] parts = request.split(" ");
+        System.out.println();
         String response;
         if(parts.length == 0)
             return "Invalid request";
@@ -24,16 +28,20 @@ public class WorkerRunnable implements Runnable{
             case "list" -> elaborateList();
             default -> "Invalid request";
         };
+        System.out.println(response);
         return response;
     }
 
     public void run() {
         try {
-            InputStream input = clientSocket.getInputStream();
+            DataInputStream input = new DataInputStream(clientSocket.getInputStream());
             OutputStream output = clientSocket.getOutputStream();
 
             byte[] b = new byte[100];
-            var request = new String(b);
+            String request="";
+            if(input.read(b) > 0) {
+                request=new String(b);
+            }
 
             output.write(parseRequest(request).getBytes());
 
@@ -48,36 +56,36 @@ public class WorkerRunnable implements Runnable{
 
     private String elaborateBook(String[] parts){
         if(parts.length < 3)
-            return "Invalid request";
+            return "Invalid request 'book'";
         var capacity = Integer.parseInt(parts[2]);
         if(capacity <= 0)
-            return "Invalid capacity";
+            return "Invalid capacity 'book'";
 
         if(em.book(parts[1], capacity))
             return "Booked";
 
-        return "Event ("+parts[1]+") not available";
+        return "Event ("+parts[1]+") not available 'book'";
     }
 
     private String elaborateAdd(String[] parts){
         if(parts.length < 3)
-            return "Invalid request";
+            return "Invalid request 'Add'";
         var capacity = Integer.parseInt(parts[2]);
         if(capacity <= 0)
-            return "Invalid capacity";
+            return "Invalid capacity 'Add'";
 
-        if(em.book(parts[1], capacity))
+        if(em.addEvent(parts[1], capacity))
             return "Added";
 
-        return "Event ("+parts[1]+") already present";
+        return "Event ("+parts[1]+") already present 'Add'";
     }
 
     private String elaborateClose(String[] parts){
         if(parts.length < 2)
-            return "Invalid request";
+            return "Invalid request 'Close'";
         if(em.close(parts[1]))
             return "Closed";
-        return "Event ("+parts[1]+") not available";
+        return "Event ("+parts[1]+") not available 'Close'";
     }
 
     private String elaborateList(){
