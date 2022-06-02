@@ -1,35 +1,30 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.event.ActionEvent;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.Socket;
 
-public class ClientGUI extends JFrame{
+public class GUI extends JFrame{
 
     //Variabili Interfaccia grafica
     public JButton AggiuntaEvento;
     public JButton AggiornaLista;
-    private JTextField NomeEvento;
-    private JTextField QuantitaEvento;
-    private JTable TabellaEventi;
-    private JLabel Titolo;
-    private JLabel TitoloTabella;
-    private JScrollPane jScrollPane1;
+    public JTextField QuantitaEvento;
+    public JTable TabellaEventi;
+    public JLabel Titolo;
+    public JLabel TitoloTabella;
+    public JScrollPane jScrollPane1;
 
 
-    //variabili output input
-    DataInputStream input;
-    DataOutputStream output;
-
-    public ClientGUI(DataInputStream input, DataOutputStream output){
+    public GUI(){
         super("Client");
-        this.input=input;
-        this.output=output;
+        initComponents();
     }
 
 
     public void initComponents() {
-        NomeEvento = new javax.swing.JTextField();
         QuantitaEvento = new javax.swing.JTextField();
         AggiuntaEvento = new javax.swing.JButton();
         AggiornaLista = new javax.swing.JButton();
@@ -52,26 +47,29 @@ public class ClientGUI extends JFrame{
                 return false;
             }
         });
+        TabellaEventi.getTableHeader().setReorderingAllowed(false);
+        TabellaEventi.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         jScrollPane1.setViewportView(TabellaEventi);
 
         TitoloTabella.setText("Lista Eventi");
-
-        NomeEvento.setText("Inserire Nome Evento ");
 
         QuantitaEvento.setText("Inserire Quantita Persone");
 
         AggiuntaEvento.setText("Iscriviti all'evento");
         AggiornaLista.setText("Aggiorna tabella");
 
-        MyWorkerBook aggiuntaEventoHandler1  = new MyWorkerBook(this);
+
+        MyListenerBook aggiuntaEventoHandler1  = new MyListenerBook(this);
         AggiuntaEvento.addActionListener(aggiuntaEventoHandler1);
 
-        MyWorkerReload aggiuntaEventoHandler2  = new MyWorkerReload(this);
+        MyListenerReload aggiuntaEventoHandler2  = new MyListenerReload(this);
         AggiornaLista.addActionListener(aggiuntaEventoHandler2);
+
+
+
 
         JPanel Panel = new JPanel();
         Panel.add(Titolo);
-        Panel.add(NomeEvento);
         Panel.add(QuantitaEvento);
         Panel.add(AggiuntaEvento);
         Panel.add(AggiornaLista);
@@ -82,42 +80,21 @@ public class ClientGUI extends JFrame{
         setVisible(true);
         pack();
 
+        aggiuntaEventoHandler2.actionPerformed(new ActionEvent(this,ActionEvent.ACTION_PERFORMED,null){});
 
     }
 
 
-    public void aggiornaTabella(String eventList) {
-
-
-        eventList = eventList.substring(0, eventList.indexOf('\0'));
-        String[] righe = eventList.split("\n");
-        for (int i = 0; i < righe.length; i++) {
-            righe[i] = righe[i].substring(6);
-        }
-        String[] informazioni = new String[2];
-        DefaultTableModel model = (DefaultTableModel) TabellaEventi.getModel();
-
-        for (int j = 0; j < model.getRowCount(); j++) {
-            model.removeRow(j);
-        }
-        for (int i = 0; i < righe.length; i++) {
-            String[] tmp = righe[i].split(",");
-
-            informazioni[0] = tmp[0].substring(0, tmp[0].indexOf(" "));
-            informazioni[1] = tmp[1].substring(tmp[1].indexOf("=") + 1);
-
-            model.addRow(informazioni);
-            TabellaEventi.repaint();
-        }
+    public String getQuantitaEvento(){
+        return QuantitaEvento.getText();
     }
 
 
-    public DataInputStream getInput(){
-        return this.input;
-    }
 
-    public DataOutputStream getOutput(){
-        return this.output;
+    public JTable getEventsTable(){
+        return this.TabellaEventi;
     }
 
 }
+
+

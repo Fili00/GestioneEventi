@@ -3,8 +3,7 @@ public class Main {
         Server s = new Server(50000);
         Thread t = new Thread(s);
         t.start();
-        //Thread tc = new Thread(c);
-        Client c = new Client(50000);
+        GUI c = new GUI();
         try {
 
             Thread.sleep(60000);

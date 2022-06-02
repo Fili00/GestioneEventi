@@ -45,7 +45,7 @@ public class WorkerRunnable implements Runnable{
 
             output.write(parseRequest(request).getBytes());
 
-            //clientSocket.close();
+            clientSocket.close();
             input.close();
             output.close();
 

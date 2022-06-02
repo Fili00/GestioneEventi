@@ -1,26 +1,49 @@
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.Socket;
 import java.util.List;
 
-public class MyWorkerBook implements ActionListener {
-    private ClientGUI client;
+public class MyWorkerBook extends SwingWorker<String, Integer> {
+    private GUI client;
+    private Socket socket;
+    private DataOutputStream output;
+    private DataInputStream input;
 
-    public MyWorkerBook(ClientGUI client){
+    public MyWorkerBook(GUI client){
+        try {
+            this.socket = new Socket("localhost",50000);
+            this.input=new DataInputStream(this.socket.getInputStream());
+            this.output=new DataOutputStream(this.socket.getOutputStream());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         this.client=client;
     }
 
+
+
     @Override
-    public void actionPerformed(ActionEvent ev) {
+    protected String doInBackground() throws Exception {
+        return "Done!";
+    }
+
+    @Override
+    protected void process(List<Integer> chunks) {
+
+    }
+
+    @Override
+    protected void done() {
         String request="";
         try {
-            DataInputStream input = client.getInput();
-            OutputStream output = client.getOutput();
-
-            output.write(("list").getBytes());
+            int column = 0;
+            int row = client.TabellaEventi.getSelectedRow();
+            String value = client.TabellaEventi.getModel().getValueAt(row, column).toString();
+            output.write(("book "+value+" "+client.getQuantitaEvento()).getBytes());
 
             byte[] b = new byte[1000];
 
@@ -33,16 +56,16 @@ public class MyWorkerBook implements ActionListener {
             e.printStackTrace();
         }
 
-        client.aggiornaTabella(request);
         try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
+            this.socket.close();
+            this.input.close();
+            this.output.close();
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
-
+        //client.aggiornaSocket();
         //client.prenota();
-
     }
 }
 
