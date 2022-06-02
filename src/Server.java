@@ -16,9 +16,12 @@ public class Server implements Runnable {
         this.serverPort = port;
         threadPool = Executors.newCachedThreadPool();
         em = new EventManager();
+        em.addEvent("Ernia",40);
+        em.addEvent("Sis",14);
     }
 
     public void run() {
+
         try {
             this.serverSocket = new ServerSocket(this.serverPort);
         } catch (IOException e) {
@@ -26,6 +29,7 @@ public class Server implements Runnable {
         }
 
         while (!isStopped()) {
+            System.out.println("Ciao");
             Socket clientSocket = null;
             try {
                 clientSocket = this.serverSocket.accept();
@@ -44,21 +48,6 @@ public class Server implements Runnable {
         System.out.println("Server Stopped.");
     }
 
-
-
-    /*
-    private void processClientRequest(Socket clientSocket) throws Exception {
-        InputStream input = clientSocket.getInputStream();
-        OutputStream output = clientSocket.getOutputStream();
-        long time = System.currentTimeMillis();
-        byte[] responseDocument="prova".getBytes();
-        byte[] responseHeader="prova".getBytes();
-        output.write(responseHeader);
-        output.write(responseDocument);
-        output.close();
-        input.close();
-        System.out.println("Request processed: " + time);
-    }*/
 
     private synchronized boolean isStopped() {
         return this.isStopped;
