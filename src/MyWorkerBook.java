@@ -38,20 +38,31 @@ public class MyWorkerBook extends SwingWorker<String, Integer> {
 
     @Override
     protected void done() {
+
+
+
+
+
+
+
         String request="";
         try {
             int column = 0;
             int row = client.TabellaEventi.getSelectedRow();
+            if(row<0){
+                client.MessaggioErrore.setText("Select element on the table");
+                return;
+            }
             String value = client.TabellaEventi.getModel().getValueAt(row, column).toString();
             output.write(("book "+value+" "+client.getQuantitaEvento()).getBytes());
 
             byte[] b = new byte[1000];
-
             if(input.read(b) > 0) {
                 request=new String(b);
             }
-
-            //System.out.println(request);
+            client.MessaggioErrore.setText(request);
+            System.out.println(request);
+            client.aggiornaTabella();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -64,8 +75,6 @@ public class MyWorkerBook extends SwingWorker<String, Integer> {
             e.printStackTrace();
         }
 
-        //client.aggiornaSocket();
-        //client.prenota();
     }
 }
 

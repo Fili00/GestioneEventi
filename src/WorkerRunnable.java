@@ -42,8 +42,9 @@ public class WorkerRunnable implements Runnable{
             if(input.read(b) > 0) {
                 request=new String(b);
             }
-
             output.write(parseRequest(request).getBytes());
+
+
 
             clientSocket.close();
             input.close();
@@ -58,14 +59,20 @@ public class WorkerRunnable implements Runnable{
     private String elaborateBook(String[] parts){
         if(parts.length < 3)
             return "Invalid request 'book'";
-        var capacity = Integer.parseInt(parts[2]);
-        if(capacity <= 0)
-            return "Invalid capacity 'book'";
+        try{
+            var capacity = Integer.parseInt(parts[2]);
+            if(capacity <= 0)
+                return "Invalid capacity 'book'";
 
-        if(em.book(parts[1], capacity))
-            return "Booked";
+            if(em.book(parts[1], capacity))
+                return "Booked";
 
-        return "Event ("+parts[1]+") not available 'book'";
+            return "Event ("+parts[1]+") not available 'book'";
+        }catch(NumberFormatException e){
+            return "Number needed";
+        }
+
+
     }
 
     private String elaborateAdd(String[] parts){
