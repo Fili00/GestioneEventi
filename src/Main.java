@@ -6,7 +6,7 @@ public class Main {
         GUI c = new GUI();
         try {
 
-            Thread.sleep(60000);
+            Thread.sleep(5000);
 
         } catch (InterruptedException e) {
             throw new RuntimeException(e);

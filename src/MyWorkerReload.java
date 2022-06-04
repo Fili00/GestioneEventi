@@ -12,21 +12,36 @@ public class MyWorkerReload extends SwingWorker<String, Integer> {
     private Socket socket;
     private DataOutputStream output;
     private DataInputStream input;
+    private String response;
 
     public MyWorkerReload(GUI client){
+        this.response="";
+        this.client=client;
         try {
             this.socket = new Socket("localhost",50000);
             this.input=new DataInputStream(this.socket.getInputStream());
             this.output=new DataOutputStream(this.socket.getOutputStream());
 
         } catch (IOException e) {
-            e.printStackTrace();
+            this.response="Server unreachable";
         }
-        this.client=client;
     }
 
     @Override
     protected String doInBackground() throws Exception {
+        if(this.response.equals("Server unreachable"))
+            return "Error";
+        try {
+            output.write(("list").getBytes());
+
+            byte[] b = new byte[1000];
+
+            if(input.read(b) > 0) {
+                response=new String(b);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return "Done!";
     }
 
@@ -38,25 +53,12 @@ public class MyWorkerReload extends SwingWorker<String, Integer> {
 
     @Override
     protected void done(){
-        String request="";
-        try {
-            output.write(("list").getBytes());
-
-            byte[] b = new byte[1000];
-
-            if(input.read(b) > 0) {
-                request=new String(b);
-            }
-
-
-            //System.out.println(request);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(this.response.equals("Server unreachable")) {
+            client.MessaggioErrore.setText(response);
+            return;
         }
-
-
-        request = request.substring(0, request.indexOf('\0'));
-        String[] righe = request.split("\n");
+        response = response.substring(0, response.indexOf('\0'));
+        String[] righe = response.split("\n");
         for (int i = 0; i < righe.length; i++) {
             righe[i] = righe[i].substring(6);
         }

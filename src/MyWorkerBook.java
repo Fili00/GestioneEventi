@@ -11,23 +11,46 @@ public class MyWorkerBook extends SwingWorker<String, Integer> {
     private Socket socket;
     private DataOutputStream output;
     private DataInputStream input;
+    private String response;
 
     public MyWorkerBook(GUI client){
+        this.client=client;
+        this.response = "";
         try {
             this.socket = new Socket("localhost",50000);
             this.input=new DataInputStream(this.socket.getInputStream());
             this.output=new DataOutputStream(this.socket.getOutputStream());
-
         } catch (IOException e) {
-            e.printStackTrace();
+            this.response = "Server unreachable";
         }
-        this.client=client;
     }
 
 
 
     @Override
     protected String doInBackground() throws Exception {
+        if(this.response.equals("Server unreachable"))
+            return "Error";
+        try {
+            int column = 0;
+            int row = client.TabellaEventi.getSelectedRow();
+            if(row<0){
+                response = "Select element on the table";
+                return "error";
+            }
+            String value = client.TabellaEventi.getModel().getValueAt(row, column).toString();
+            output.write(("book "+value+" "+client.getQuantitaEvento()).getBytes());
+
+            byte[] b = new byte[1000];
+            if(input.read(b) > 0) {
+                response=new String(b);
+            }
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         return "Done!";
     }
 
@@ -38,35 +61,12 @@ public class MyWorkerBook extends SwingWorker<String, Integer> {
 
     @Override
     protected void done() {
-
-
-
-
-
-
-
-        String request="";
-        try {
-            int column = 0;
-            int row = client.TabellaEventi.getSelectedRow();
-            if(row<0){
-                client.MessaggioErrore.setText("Select element on the table");
-                return;
-            }
-            String value = client.TabellaEventi.getModel().getValueAt(row, column).toString();
-            output.write(("book "+value+" "+client.getQuantitaEvento()).getBytes());
-
-            byte[] b = new byte[1000];
-            if(input.read(b) > 0) {
-                request=new String(b);
-            }
-            client.MessaggioErrore.setText(request);
-            System.out.println(request);
-            client.aggiornaTabella();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(this.response.equals("Server unreachable")) {
+            client.MessaggioErrore.setText(response);
+            return;
         }
-
+        client.MessaggioErrore.setText(response);
+        client.aggiornaTabella();
         try {
             this.socket.close();
             this.input.close();
