@@ -7,7 +7,6 @@ public class Server implements Runnable {
     protected int serverPort;
     protected ServerSocket serverSocket = null;
     protected boolean isStopped = false;
-    protected Thread runningThread = null;
     protected ExecutorService threadPool;
 
     private EventManager em;
