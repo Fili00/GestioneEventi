@@ -20,12 +20,23 @@ public class GUI extends JFrame{
     public JLabel MessaggioQuantita;
     public JScrollPane jScrollPane1;
     MyListenerReload aggiuntaEventoHandler2;
+    private String url;
+    private int port;
 
-    public GUI(){
+    public GUI(String url, int port){
         super("Client");
+        this.url = url;
+        this.port = port;
         initComponents();
     }
 
+    public int getPort() {
+        return port;
+    }
+
+    public String getUrl() {
+        return url;
+    }
 
     public void initComponents() {
         QuantitaEvento = new javax.swing.JTextField();
@@ -70,10 +81,6 @@ public class GUI extends JFrame{
         aggiuntaEventoHandler2  = new MyListenerReload(this);
         AggiornaLista.addActionListener(aggiuntaEventoHandler2);
 
-
-
-
-
         JPanel Panel = new JPanel();
 
         Panel.setLayout(null);
@@ -104,7 +111,6 @@ public class GUI extends JFrame{
 
     }
 
-
     public void aggiornaTabella(){
         aggiuntaEventoHandler2.actionPerformed(new ActionEvent(this,ActionEvent.ACTION_PERFORMED,null){});
     }
@@ -113,10 +119,12 @@ public class GUI extends JFrame{
         return QuantitaEvento.getText();
     }
 
-
-
     public JTable getEventsTable(){
         return this.TabellaEventi;
+    }
+
+    public static void main(String[] args) {
+        GUI client = new GUI("localhost", 50000);
     }
 
 }

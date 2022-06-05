@@ -6,15 +6,19 @@ import java.net.Socket;
 import java.lang.Integer;
 
 public class WorkerRunnable implements Runnable{
-    private Socket clientSocket = null;
+    private Socket clientSocket;
     private final EventManager em;
+    private final Server s;
 
-    public WorkerRunnable(Socket clientSocket, EventManager em) {
+    public WorkerRunnable(Socket clientSocket, Server s) {
         this.clientSocket = clientSocket;
-        this.em = em;
+        this.s = s;
+        this.em = s.getEventManager();
     }
 
     private String parseRequest(String request){
+        if(request.length() == 0)
+            return "Invalid request";
         request=request.substring(0,request.indexOf('\0'));
         String[] parts = request.split(" ");
         System.out.println();
@@ -26,6 +30,7 @@ public class WorkerRunnable implements Runnable{
             case "add" -> elaborateAdd(parts);
             case "close" -> elaborateClose(parts);
             case "list" -> elaborateList();
+            case "terminate" -> elaborateTerminate();
             default -> "Invalid request";
         };
         System.out.println(response);
@@ -98,6 +103,11 @@ public class WorkerRunnable implements Runnable{
 
     private String elaborateList(){
         return em.toString();
+    }
+
+    private String elaborateTerminate(){
+        s.stop();
+        return "Server closed";
     }
 
 }

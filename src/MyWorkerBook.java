@@ -17,7 +17,7 @@ public class MyWorkerBook extends SwingWorker<String, Integer> {
         this.client=client;
         this.response = "";
         try {
-            this.socket = new Socket("localhost",50000);
+            this.socket = new Socket(client.getUrl(),client.getPort());
             this.input=new DataInputStream(this.socket.getInputStream());
             this.output=new DataOutputStream(this.socket.getOutputStream());
         } catch (IOException e) {

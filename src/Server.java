@@ -16,8 +16,6 @@ public class Server implements Runnable {
         this.serverPort = port;
         threadPool = Executors.newCachedThreadPool();
         em = new EventManager();
-        em.addEvent("Ernia",40);
-        em.addEvent("Sis",14);
     }
 
     public void run() {
@@ -29,7 +27,6 @@ public class Server implements Runnable {
         }
 
         while (!isStopped()) {
-            System.out.println("Ciao");
             Socket clientSocket = null;
             try {
                 clientSocket = this.serverSocket.accept();
@@ -42,12 +39,15 @@ public class Server implements Runnable {
                 throw new RuntimeException(
                         "Error accepting client connection", e);
             }
-            this.threadPool.execute(new WorkerRunnable(clientSocket, em));
+            this.threadPool.execute(new WorkerRunnable(clientSocket, this));
         }
 
         System.out.println("Server Stopped.");
     }
 
+    public EventManager getEventManager() {
+        return em;
+    }
 
     private synchronized boolean isStopped() {
         return this.isStopped;
@@ -59,6 +59,24 @@ public class Server implements Runnable {
             this.serverSocket.close();
         } catch (IOException e) {
             throw new RuntimeException("Error closing server", e);
+        }
+    }
+
+    public void initTest(){
+        em.addEvent("Event1", 50);
+        em.addEvent("Event2", 30);
+    }
+
+    public static void main(String[] args){
+        Server s = new Server(50000);
+        Thread t = new Thread(s);
+        t.start();
+
+        s.initTest(); //TODO: REMOVE
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 }
