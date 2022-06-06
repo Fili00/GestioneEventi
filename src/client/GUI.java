@@ -16,7 +16,7 @@ public class GUI extends JFrame{
     public JLabel TitoloTabella;
     public JLabel MessaggioQuantita;
     public JScrollPane jScrollPane1;
-    MyListenerReload aggiuntaEventoHandler2;
+    public MyListenerReload aggiuntaEventoHandler2;
     private String url;
     private int port;
 
