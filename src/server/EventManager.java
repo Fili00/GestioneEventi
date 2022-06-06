@@ -1,7 +1,9 @@
+package server;
+
 import java.util.concurrent.ConcurrentHashMap;
 
 public class EventManager {
-    private final ConcurrentHashMap<String,Event> events;
+    private final ConcurrentHashMap<String, Event> events;
     public EventManager(){
         events = new ConcurrentHashMap<String, Event>();
     }
@@ -17,14 +19,13 @@ public class EventManager {
             ev.setCurrentCapacity(capacity);
             return true;
         }catch (Exception e){
-            ev.wait(); //TODO: VEDERE SE TOGLIERE THROWS IN ALTO
+            ev.wait();
             return bookAux(ev, capacity);
         }
     }
 
     //book [name] [capacity]
     public boolean book(String name, int capacity) {  //metodo 'Prenota'
-            //TODO: RENDERE BLOCCANTE
         var event = events.get(name);
         if(event == null)
             return false;
@@ -40,7 +41,7 @@ public class EventManager {
         }
     }
 
-    //add [name] [capacity]
+    //addcapacity [name] [capacity]
     public boolean addCapacity(String name, int capacity){ //metodo 'Aggiungi'
         var event = events.get(name);
 
@@ -60,7 +61,6 @@ public class EventManager {
 
         return true;
     }
-    //TODO: METODO CHIUDI
 
     //close [name]
     public boolean close(String name){ //metodo 'Chiudi'

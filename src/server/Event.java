@@ -1,3 +1,5 @@
+package server;
+
 import java.security.InvalidParameterException;
 import java.util.Objects;
 

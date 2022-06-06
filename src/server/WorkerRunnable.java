@@ -1,6 +1,9 @@
+package server;
+
+import server.EventManager;
+
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.lang.Integer;
@@ -31,6 +34,7 @@ public class WorkerRunnable implements Runnable{
             case "close" -> elaborateClose(parts);
             case "list" -> elaborateList();
             case "terminate" -> elaborateTerminate();
+            case "addcapacity" -> elaborateAddCapacity(parts);
             default -> "Invalid request";
         };
         System.out.println(response);
@@ -48,8 +52,6 @@ public class WorkerRunnable implements Runnable{
                 request=new String(b);
             }
             output.write(parseRequest(request).getBytes());
-
-
 
             clientSocket.close();
             input.close();
@@ -91,6 +93,17 @@ public class WorkerRunnable implements Runnable{
             return "Added";
 
         return "Event ("+parts[1]+") already present 'Add'";
+    }
+
+    private String elaborateAddCapacity(String[] parts){
+        if(parts.length < 3)
+            return "Invalid request 'Add capacity'";
+        var capacity = Integer.parseInt(parts[2]);
+
+        if(em.addCapacity(parts[1], capacity))
+            return "Added";
+
+        return "Impossible to increment the capacity";
     }
 
     private String elaborateClose(String[] parts){

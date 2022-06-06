@@ -1,3 +1,6 @@
+import client.GUI;
+import server.Server;
+
 public class Main {
     public static void main(String[] args){
         Server s = new Server(50000);

@@ -1,3 +1,5 @@
+package server;
+
 import java.io.*;
 import java.net.*;
 import java.util.concurrent.ExecutorService;
@@ -14,7 +16,7 @@ public class Server implements Runnable {
 
     public Server(int port) {
         this.serverPort = port;
-        threadPool = Executors.newCachedThreadPool();
+        threadPool = Executors.newFixedThreadPool(16);
         em = new EventManager();
     }
 
